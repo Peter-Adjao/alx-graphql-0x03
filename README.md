@@ -1,5 +1,3 @@
-# alx-graphql-0x03
-
 # 🚀 alx-graphql-0x03 — ALX Rick and Morty GraphQL App
 
 This project is a React-based frontend built with **Next.js**, **TypeScript**, **TailwindCSS**, and **Apollo Client**. It consumes the [Rick and Morty GraphQL API](https://rickandmortyapi.com/graphql) to display episodes with pagination. In this version, we’ve added robust error handling using a custom-built `ErrorBoundary` component.
