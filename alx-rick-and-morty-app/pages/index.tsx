@@ -8,18 +8,25 @@ import ErrorProneComponent from '@/components/ErrorProneComponent';
 
 
 const Home: React.FC = () => {
+  const [page, setPage] = useState<number>(1);
+  const [isClient, setIsClient] = useState(false);
 
-  const [page, setPage] = useState<number>(1)
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const { loading, error, data, refetch } = useQuery(GET_EPISODES, {
     variables: {
       page: page
-    }
+    },
+    skip: typeof window === 'undefined'
   })
 
   useEffect(() => {
     refetch()
   }, [page, refetch])
 
+  if (!isClient) return null; // Prevent hydration mismatch
   if (loading) return <h1>Loading...</h1>
   if (error) return <h1>Error</h1>
 
@@ -27,50 +34,52 @@ const Home: React.FC = () => {
   const info = data?.episodes.info
 
   return (
+    <>
     <ErrorBoundary>
       <ErrorProneComponent />
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#A3D5E0] to-[#F4F4F4] text-gray-800">
-      {/* Header */}
-      <header className="bg-[#4CA1AF] text-white py-6 text-center shadow-md">
-        <h1 className="text-4xl font-bold tracking-wide">Rick and Morty Episodes</h1>
-        <p className="mt-2 text-lg italic">Explore the multiverse of adventures!</p>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-grow p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {results && results.map(({ id, name, air_date, episode }: EpisodeProps, key: number) => (
-            <EpisodeCard
-              id={id}
-              name={name}
-              air_date={air_date}
-              episode={episode}
-              key={key}
-            />
-          ))}
-        </div>
-
-        {/* Pagination Buttons */}
-        <div className="flex justify-between mt-6">
-          <button 
-            onClick={() => setPage(prev => prev > 1 ? prev - 1 : 1)}
-            className="bg-[#45B69C] text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:bg-[#3D9B80] transition duration-200 transform hover:scale-105">
-            Previous
-          </button>
-          <button 
-            onClick={() => setPage(prev => prev < info.pages ? prev + 1 : prev)}
-            className="bg-[#45B69C] text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:bg-[#3D9B80] transition duration-200 transform hover:scale-105">
-            Next
-          </button>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-[#4CA1AF] text-white py-4 text-center shadow-md">
-        <p>&copy; 2024 Rick and Morty Fan Page</p>
-      </footer>
-    </div>
     </ErrorBoundary>
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#A3D5E0] to-[#F4F4F4] text-gray-800">
+        {/* Header */}
+        <header className="bg-[#4CA1AF] text-white py-6 text-center shadow-md">
+          <h1 className="text-4xl font-bold tracking-wide">Rick and Morty Episodes</h1>
+          <p className="mt-2 text-lg italic">Explore the multiverse of adventures!</p>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-grow p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {results && results.map(({ id, name, air_date, episode }: EpisodeProps, key: number) => (
+              <EpisodeCard
+                id={id}
+                name={name}
+                air_date={air_date}
+                episode={episode}
+                key={key} />
+            ))}
+          </div>
+
+          {/* Pagination Buttons */}
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={() => setPage(prev => prev > 1 ? prev - 1 : 1)}
+              className="bg-[#45B69C] text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:bg-[#3D9B80] transition duration-200 transform hover:scale-105">
+              Previous
+            </button>
+            <button
+              onClick={() => setPage(prev => prev < info.pages ? prev + 1 : prev)}
+              className="bg-[#45B69C] text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:bg-[#3D9B80] transition duration-200 transform hover:scale-105">
+              Next
+            </button>
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="bg-[#4CA1AF] text-white py-4 text-center shadow-md">
+          <p>&copy; 2024 Rick and Morty Fan Page</p>
+        </footer>
+      </div>
+      </>
+  
   )
 }
 
